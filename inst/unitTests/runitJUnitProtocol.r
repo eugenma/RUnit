@@ -13,55 +13,43 @@
 ##  You should have received a copy of the GNU General Public License
 ##  along with this program; if not, write to the Free Software
 ##  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-##
-##  $Id: runitHTMLProtocol.r,v 1.3 2009/04/16 09:18:52 burgerm Exp $
 
 
-cat("\n\nRUnit test cases for 'HTMLProtocol' function\n\n")
+cat("\n\nRUnit test cases for 'printJUnitProtocol' function\n\n")
 
 
-testRUnit.printHTMLProtocol <- function()
+testRUnit.printJUnitProtocol <- function()
 {
-  ##  FIXME
-  ##  this is not safe, think about assigning .logger to new environment
-  ##  copy baseenv() .logger
-  tmp <- get(".testLogger", envir = .GlobalEnv)
+  ##  copy baseenv() logger
+  tmp <- get(".testLogger", envir = RUnitEnv)
   testCaseDir <- file.path(system.file(package="RUnit"), "examples")
   testSuiteInternal <- defineTestSuite("RUnit Self Test", testCaseDir, "correctTestCase.r")
   testData2 <- runTestSuite(testSuiteInternal, useOwnErrorHandler=FALSE)
 
   timeStamp <- format(Sys.time(), "%y%m%d-%H%M")
-  testProtocolFile <- file.path(tempdir(), paste(timeStamp, "test_printHTMLProtocol.html", sep="_"))
-  ret <- printHTMLProtocol(testData2, fileName=testProtocolFile)
+  testProtocolFile <- file.path(tempdir(), paste(timeStamp, "test_printJUnitProtocol.xml", sep="_"))
+  ret <- printJUnitProtocol(testData2, fileName=testProtocolFile)
 
-  assign(".testLogger", tmp, envir = .GlobalEnv)
+  assign(".testLogger", tmp, envir = RUnitEnv)
   
   checkTrue( file.exists(testProtocolFile))
-  
-  
+
+
   ##  input argument error handling
   ##  missing 'testData' object
-  checkException(printHTMLProtocol())
+  checkException(printJUnitProtocol())
 
   ##  wrong class
-  checkException(printHTMLProtocol("dummy"))
+  checkException(printJUnitProtocol("dummy"))
 
   
   ##  fileName arg errors
   testData <- list()
   class(testData) <- "RUnitTestData"
   ##  wrong type
-  checkException(printHTMLProtocol(testData, fileName=numeric(1)))
+  checkException(printJUnitProtocol(testData, fileName=numeric(1)))
   ##  wrong length
-  checkException(printHTMLProtocol(testData, fileName=character(0)))
-  checkException(printHTMLProtocol(testData, fileName=character(2)))
-
-  
-  ##  separateFailureList arg errors
-  ##  wrong type
-  checkException(printHTMLProtocol(testData, separateFailureList=numeric(0)))
-  ##  wrong length
-  checkException(printHTMLProtocol(testData, separateFailureList=logical(0)))
-  checkException(printHTMLProtocol(testData, separateFailureList=logical(2)))
+  checkException(printJUnitProtocol(testData, fileName=character(0)))
+  checkException(printJUnitProtocol(testData, fileName=character(2)))
 }
 
