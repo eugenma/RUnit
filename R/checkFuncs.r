@@ -16,22 +16,21 @@
 
 ##  $Id: checkFuncs.r,v 1.24 2009/11/05 18:57:56 burgerm Exp $
 
-checkFuncSkeleton <- function(expr, testFailedChecker, errMsg, envir=parent.frame()) {
-	if(RUnit:::.existsTestLogger()) {
-		.getRUnitIncrementCheckNum()
-	}
+checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame()) {
+  if(.existsTestLogger()) {
+    RUnitEnv$.testLogger$incrementCheckNum()
+  }
 
   result <- eval(expr, envir=envir)
 
-	if (testFailedChecker(result)){
-		if(RUnit:::.existsTestLogger()) {
-			.getRUnitSetFailure()
-		}
-
-		stop(errMsg(result))
-	} else {
-		return(TRUE)
-	}
+  if (testFailedChecker(result)){
+    if(.existsTestLogger()) {
+      RUnitEnv$.testLogger$setFailure()
+    }
+    stop(errMsg(result))
+  } else {
+    return(TRUE)
+  }
 }
 
 
@@ -68,19 +67,20 @@ checkEquals <- function(target, current, msg="",
     stop("'checkNames' has to be a scalar")
   }
 
-  checkExpr <- {
-      if (!identical(TRUE, checkNames)) {
-        names(target)  <- NULL
-        names(current) <- NULL
-      }
-      result <- all.equal(target, current, tolerance=tolerance, ...)
+  checkExpr <- function(){
+    if (!identical(TRUE, checkNames)) {
+      names(target)  <- NULL
+      names(current) <- NULL
+    }
+    result <- all.equal(target, current, tolerance=tolerance, ...)
+    return(result)
   }
 
   testFailed <- function(result)!identical(result, TRUE)
 
   errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncSkeleton(checkExpr, testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
 
 
@@ -110,15 +110,16 @@ checkEqualsNumeric <- function(target, current, msg="", tolerance = .Machine$dou
     stop("'tolerance' has to be a scalar")
   }
 
-  checkExpr <- {
+  checkExpr <- function(){
   ##  R 2.3.0: changed behaviour of all.equal
   ##  strip attributes before comparing current and target
     result <- all.equal.numeric(as.vector(target), as.vector(current), tolerance=tolerance, ...)
+    return(result)
   }
   testFailed <- function(result)!identical(result, TRUE)
   errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncSkeleton(checkExpr, testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
 
 
@@ -140,14 +141,15 @@ checkIdentical <- function(target, current, msg="")
     stop("argument 'current' is missing")
   }
 
-  expr <- {
+  checkExpr <- function(){
     result <- identical(target, current)
+    return(result)
   }
   
   testFailed <- function(result)!identical(result, TRUE)
   errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncSkeleton(checkExpr, testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
 
 
@@ -167,16 +169,17 @@ checkTrue <- function(expr, msg="")
     stop("'expr' is missing")
   }
 
-  expr <- {
-      ##  allow named logical argument 'expr'
-      result <- eval(expr)
-      names(result) <- NULL
+  checkExpr <- function(){
+    ##  allow named logical argument 'expr'
+    result <- eval(expr)
+    names(result) <- NULL
+    return(result)
   }
 
   testFailed <- function(result)!identical(result, TRUE)
-  errorMsg <- function(result, msg)paste("Test not TRUE", "\n", msg)
+  errorMsg <- function(result)paste("Test not TRUE", "\n", msg)
 
-  return(checkFuncSkeleton(checkExpr, testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
 
 
@@ -206,14 +209,15 @@ checkException <- function(expr, msg="", silent=getOption("RUnit")$silent)
     warning("'silent' has to be of type 'logical'. Was NULL. Set to FALSE.")
   }
 
-  expr <- {
-      tryResult <- try(eval(expr, envir=parent.frame()), silent=silent)
+  checkExpr <- function(){
+    tryResult <- try(eval(expr, envir=parent.frame()), silent=silent)
+    return(tryResult)
   }
 
   testFailed <- function(tryResult)!inherits(tryResult, "try-error")
   errorMsg <- function(result, msg)paste("Error not generated as expected\n", msg)
 
-  return(checkFuncSkeleton(checkExpr, testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
 
 
