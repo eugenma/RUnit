@@ -23,6 +23,7 @@ importFrom("graphics", "arrows", "legend", "lines", "plot", "text")
 
 export(".setUp",
        ".tearDown",
+       "checkFuncRunner",
        "checkTrue",
        "checkEquals",
        "checkEqualsNumeric",

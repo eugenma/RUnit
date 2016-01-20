@@ -13,3 +13,4 @@ install:
 
 test:
 	$(R_HOME)/bin/R --slave < runalltests.R
+

@@ -16,14 +16,25 @@
 
 ##  $Id: checkFuncs.r,v 1.24 2009/11/05 18:57:56 burgerm Exp $
 
-checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame()) {
+checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame()) {  
+  ##@bdescr
+  ## runner for custom check functions. 
+  ##@edescr
+  ##@in expr                : [function] function call which should do the check and return a value which is passed to 'testFailedChecker' and 'errMsg'
+  ##@in testFailedChecker   : [function] which takes the outcome of 'expr' and returns 'TRUE' in case of error and 'FALSE' otherwise
+  ##@in errMsg              : [function] takes the return value of 'expr' and creates the check failed message
+  ##@in envir               : [environment] an environment where 'expr' is evaluated. It should not be changed by default
+  ##
+  ##@ret                    : [logical] TRUE, if the test is passed, and error is raised (by 'stop()') otherwise
+  ##
+  ##@codestatus : testing
   if(.existsTestLogger()) {
     RUnitEnv$.testLogger$incrementCheckNum()
   }
 
   result <- eval(expr, envir=envir)
 
-  if (testFailedChecker(result)){
+  if (testFailedChecker(result)) {
     if(.existsTestLogger()) {
       RUnitEnv$.testLogger$setFailure()
     }
@@ -78,7 +89,7 @@ checkEquals <- function(target, current, msg="",
 
   testFailed <- function(result)!identical(result, TRUE)
 
-  errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
+  errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
   return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
@@ -117,7 +128,7 @@ checkEqualsNumeric <- function(target, current, msg="", tolerance = .Machine$dou
     return(result)
   }
   testFailed <- function(result)!identical(result, TRUE)
-  errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
+  errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
   return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
@@ -147,7 +158,7 @@ checkIdentical <- function(target, current, msg="")
   }
   
   testFailed <- function(result)!identical(result, TRUE)
-  errorMsg <- function(result, msg)paste(paste(result, collapse="\n"), "\n", msg)
+  errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
   return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
@@ -215,7 +226,7 @@ checkException <- function(expr, msg="", silent=getOption("RUnit")$silent)
   }
 
   testFailed <- function(tryResult)!inherits(tryResult, "try-error")
-  errorMsg <- function(result, msg)paste("Error not generated as expected\n", msg)
+  errorMsg <- function(result)paste("Error not generated as expected\n", msg)
 
   return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
 }
