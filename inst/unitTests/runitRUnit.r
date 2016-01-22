@@ -505,10 +505,16 @@ testRUnit.checkException <- function()
 }
 
 
-# testRUnit.checkWarning <- function(){
-#   checkWarning(warning("with message"), silent=FALSE)
-#   checkWarning(warning("no warning"), silent=TRUE)
-# }
+testRUnit.checkWarning <- function(){
+  checkWarning(warning("Warning message OK here"), silent=FALSE)
+  checkWarning(warning("no warning"), silent=TRUE)
+  checkWarning(require("ASdfPackageXX", quietly=TRUE), silent=TRUE)
+}
+
+
+test.fail <- function() {
+  checkException(fail("A failing test"), silent=TRUE)
+}
 
 
 testRUnit.DEACTIVATED <- function()
