@@ -37,19 +37,19 @@ testRUnit.printJUnitProtocol <- function()
 
   ##  input argument error handling
   ##  missing 'testData' object
-  checkException(printJUnitProtocol())
+  checkException(printJUnitProtocol(), silent=TRUE)
 
   ##  wrong class
-  checkException(printJUnitProtocol("dummy"))
+  checkException(printJUnitProtocol("dummy"), silent=TRUE)
 
   
   ##  fileName arg errors
   testData <- list()
   class(testData) <- "RUnitTestData"
   ##  wrong type
-  checkException(printJUnitProtocol(testData, fileName=numeric(1)))
+  checkException(printJUnitProtocol(testData, fileName=numeric(1)), silent=TRUE)
   ##  wrong length
-  checkException(printJUnitProtocol(testData, fileName=character(0)))
-  checkException(printJUnitProtocol(testData, fileName=character(2)))
+  checkException(printJUnitProtocol(testData, fileName=character(0)), silent=TRUE)
+  checkException(printJUnitProtocol(testData, fileName=character(2)), silent=TRUE)
 }
 

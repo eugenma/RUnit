@@ -17,7 +17,7 @@
 ##  $Id: runitRUnit.r,v 1.18 2010/09/15 13:40:25 burgerm Exp $
 
 
-cat("\n\nRUnit test cases for 'RUnit:check' functions\n\n")
+#cat("\n\nRUnit test cases for 'RUnit:check' functions\n\n")
 
 
 testRUnit.checkEquals <- function()
@@ -41,7 +41,10 @@ testRUnit.checkEquals <- function()
   y <- 1/0
   checkEquals(Inf, y)
   checkEquals(y, Inf)
+  w <- getOption("warn")
+  options(warn=-1)
   y <- log(-1)
+  options(warn=w)
   checkEquals(NaN, y)
   checkEquals(rep(NaN, 23), rep(y, 23))
   checkEquals(9, 9.0)
@@ -150,97 +153,86 @@ testRUnit.checkEquals <- function()
     checkEquals( tPair, tPair)
   }
 
-  if (require(Biobase)) {
-    ##   class still available?
-    #if (isClass(Class="ExpressionSet", formal=TRUE)) {
-    #  ES <- new("ExpressionSet", exprs=matrix(runif(1000), nrow=100, ncol=10))
-    #  checkEquals(ES, ES)
-    #}
-    ##  cleanup workspace
-    ##  catch error if this ns is required by some other package
-    ##  and therefore cannot be unloaded
-    try(unloadNamespace("Biobase"))
-  }
-
   
   ##  detect differences
-  checkException( checkEquals(1 , 1, tolerance=FALSE))
-  checkException( checkEquals(1 , 1, tolerance=numeric(0)))
-  checkException( checkEquals(1 , 1, tolerance=numeric(2)))
+  checkException( checkEquals(1 , 1, tolerance=FALSE), silent=TRUE)
+  checkException( checkEquals(1 , 1, tolerance=numeric(0)), silent=TRUE)
+  checkException( checkEquals(1 , 1, tolerance=numeric(2)), silent=TRUE)
 
   ##  integer
   namedInt <- 1:9
   names(namedInt) <- letters[namedInt]
-  checkException( checkEquals( namedInt, 1:9))
+  checkException(checkEquals(namedInt, 1:9), silent=TRUE)
   
-  ##  numeric
-  checkException( checkEquals( 8, 9))
-  checkException( checkEquals( 0.01, 0.02, tolerance=0.009))
-  checkException(checkEquals(NaN, NA))
-  checkException(checkEquals(NaN, Inf))
-  checkException(checkEquals(NaN, -Inf))
-  checkException(checkEquals(NA, Inf))
-  checkException(checkEquals(NA, -Inf))
-  checkException(checkEquals(numeric(2), numeric(3)))
-  checkException(checkEquals(numeric(3), numeric(2)))
+  #  numeric
+  checkException( checkEquals( 8, 9), silent=TRUE)
+  checkException( checkEquals( 0.01, 0.02, tolerance=0.009), silent=TRUE)
+  checkException(checkEquals(NaN, NA), silent=TRUE)
+  checkException(checkEquals(NaN, Inf), silent=TRUE)
+  checkException(checkEquals(NaN, -Inf), silent=TRUE)
+  checkException(checkEquals(NA, Inf), silent=TRUE)
+  checkException(checkEquals(NA, -Inf), silent=TRUE)
+  checkException(checkEquals(numeric(2), numeric(3)), silent=TRUE)
+  checkException(checkEquals(numeric(3), numeric(2)), silent=TRUE)
   
   ##  complex
-  checkException( checkEquals(complex(0), complex(1)))
-  checkException( checkEquals(complex(2), complex(1)))
-  checkException( checkEquals(complex(2, imaginary=1), complex(2, imaginary=0)))
-  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=1, imaginary=0)))
-  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=0, imaginary=1)))
-  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=0, imaginary=0)))
+  checkException( checkEquals(complex(0), complex(1)), silent=TRUE)
+  checkException( checkEquals(complex(2), complex(1)), silent=TRUE)
+  checkException( checkEquals(complex(2, imaginary=1), complex(2, imaginary=0)), silent=TRUE)
+  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=1, imaginary=0)), silent=TRUE)
+  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=0, imaginary=1)), silent=TRUE)
+  checkException( checkEquals(complex(2, real=1, imaginary=1), complex(2, real=0, imaginary=0)), silent=TRUE)
   
   ##  character
   named <- character(1)
   names(named) <- "name"
-  checkException( checkEquals( character(1), named))
-  checkException( checkEquals( letters, letters[-1]))
+  checkException( checkEquals( character(1), named), silent=TRUE)
+  checkException( checkEquals( letters, letters[-1]), silent=TRUE)
   
   ##  formula
-  checkException( checkEquals( lmFit, lmFitUnnamed))
+  checkException( checkEquals( lmFit, lmFitUnnamed), silent=TRUE)
   lmFitInter <- glm(counts ~ outcome * treatment, family=poisson())
-  checkException( checkEquals( lmFitInter, lmFit))
+  checkException( checkEquals( lmFitInter, lmFit), silent=TRUE)
   
   ##  factor
   alphaFacRecoded <- factor(alphaFac, labels=as.character(seq_along(levels(alphaFac))))
-  checkException( checkEquals(alphaFacRecoded, alphaFac))
+  checkException( checkEquals(alphaFacRecoded, alphaFac), silent=TRUE)
   
   ##  list
-  checkException( checkEquals( list(1), list("1"=1)))
-  checkException( checkEquals( list(), list("1"=1)))
+  checkException( checkEquals( list(1), list("1"=1)), silent=TRUE)
+  checkException( checkEquals( list(), list("1"=1)), silent=TRUE)
   checkException( checkEquals( list(list(), list(list()), list(list(list()))),
-                              list(list(), list(list()), list(list(list(), list())))))
+                              list(list(), list(list()), list(list(list(), list())))), silent=TRUE)
 
   
   ##  POSIXct
-  checkException( checkEquals(as.POSIXct(Sys.time()), as.POSIXct("2007-04-04 16:00:00")))
-  checkException( checkEquals(as.POSIXlt(Sys.time()), as.POSIXlt("2007-04-04 16:00:00")))
+  checkException( checkEquals(as.POSIXct(Sys.time()), as.POSIXct("2007-04-04 16:00:00")), silent=TRUE)
+  checkException( checkEquals(as.POSIXlt(Sys.time()), as.POSIXlt("2007-04-04 16:00:00")), silent=TRUE)
   
   ##  nested type
   sysTime <- as.POSIXct(Sys.time())
-  checkException( checkEquals( list(a=2, list(time=sysTime)), list(a=2, time=list(sysTime))))
+  checkException( checkEquals( list(a=2, list(time=sysTime)), list(a=2, time=list(sysTime))), silent=TRUE)
 
   ##  raw
-  checkException( checkEquals(raw(1), raw(2)))
-  checkException( checkEquals(raw(1E5), raw(100001)))
+  checkException( checkEquals(raw(1), raw(2)), silent=TRUE)
+  checkException( checkEquals(raw(1E5), raw(100001)), silent=TRUE)
   raw3 <- raw(3)
   raw3mod <- raw3
   raw3mod[1] <- as.raw(3)
-  checkException( checkEquals(raw3, raw3mod))
-  checkException( checkEquals(as.raw(1:1000), as.raw(c(1:99,-1,101:1000)) ) )
+  checkException( checkEquals(raw3, raw3mod), silent=TRUE)
+  checkException(checkEquals(as.raw(1:255), as.raw(c(1:99,11,101:255))), silent=TRUE)
 
   ##  S4 objects
   if (identical(TRUE, require(methods))) {
     ##  class defined above
     s4Obj <- new("track1")
     s4Obj@x <- 1:10
-    checkException( checkEquals( s4Obj, new("track1")))
+    
+    checkException(checkEquals(s4Obj, new("track1")), silent=TRUE)
 
     tPair <- new("trackPair")
     tPair@trackx <- s4Obj
-    checkException( checkEquals( tPair, new("trackPair")))
+    checkException( checkEquals( tPair, new("trackPair")), silent=TRUE)
   }
 
 }
@@ -277,22 +269,26 @@ testRUnit.checkEqualsNumeric <- function()
 
   
   ##  numeric difference
-  checkException( checkEqualsNumeric( 9, 10))
-  checkException( checkEqualsNumeric( list(9), list(10)))
-  checkException( checkEqualsNumeric( matrix(9), matrix(10)))
+  checkException( checkEqualsNumeric( 9, 10), silent=TRUE)
+  checkException( checkEqualsNumeric( list(9), list(10)), silent=TRUE)
+  checkException( checkEqualsNumeric( matrix(9), matrix(10)), silent=TRUE)
   rvec2 <- rnorm(132)
-  checkException( checkEqualsNumeric( matrix(rvec, 12, 11), matrix(rvec2, 12, 11)))
+  checkException( checkEqualsNumeric( matrix(rvec, 12, 11), matrix(rvec2, 12, 11)), silent=TRUE)
 
   
   ##  exception handling
   ##  type not supported
-  checkException( checkEqualsNumeric( list(rvec), list(rvec)))
-  if (require(Biobase)) {
+  checkException( checkEqualsNumeric( list(rvec), list(rvec)), silent=TRUE)
+  prevWarn <- getOption("warn")
+  options(warn=-1)
+  reqRes <- require(Biobase, quietly=TRUE)
+  options(warn=prevWarn)
+  if (reqRes) {
 
     ##   class still available?
     if (isClass(Class="ExpressionSet", formal=TRUE)) {
       ES <- new("ExpressionSet", exprs=matrix(runif(1000), nrow=100, ncol=10))
-      checkException(checkEqualsNumeric(ES, ES))
+      checkException(checkEqualsNumeric(ES, ES), silent=TRUE)
     }
     ##  cleanup workspace
     try(unloadNamespace("Biobase"))
@@ -382,41 +378,41 @@ testRUnit.checkIdentical <- function()
   
   ##  exception handling
   ##  type mismatches
-  checkException( checkIdentical( as.integer(2), as.numeric(2)))
-  checkException( checkIdentical( as.integer(2), as.character(2)))
-  checkException( checkIdentical( as.integer(2), as.list(2)))
-  checkException( checkIdentical( as.integer(2), as.complex(2)))
-  checkException( checkIdentical( as.integer(2), as.expression(2)))
+  checkException( checkIdentical( as.integer(2), as.numeric(2)), silent=TRUE)
+  checkException( checkIdentical( as.integer(2), as.character(2)), silent=TRUE)
+  checkException( checkIdentical( as.integer(2), as.list(2)), silent=TRUE)
+  checkException( checkIdentical( as.integer(2), as.complex(2)), silent=TRUE)
+  checkException( checkIdentical( as.integer(2), as.expression(2)), silent=TRUE)
 
   ##  value mismatches
-  checkException( checkIdentical( as.integer(2), as.integer(3)))
-  checkException( checkIdentical( as.character(2), as.character(3)))
-  checkException( checkIdentical( as.complex(2), as.complex(3)))
-  checkException( checkIdentical( as.numeric(2), as.numeric(3)))
-  checkException( checkIdentical( as.expression("2+4"), as.expression("2+3")))
-  checkException( checkIdentical( as.factor(letters), factor(letters[-1])))
+  checkException( checkIdentical( as.integer(2), as.integer(3)), silent=TRUE)
+  checkException( checkIdentical( as.character(2), as.character(3)), silent=TRUE)
+  checkException( checkIdentical( as.complex(2), as.complex(3)), silent=TRUE)
+  checkException( checkIdentical( as.numeric(2), as.numeric(3)), silent=TRUE)
+  checkException( checkIdentical( as.expression("2+4"), as.expression("2+3")), silent=TRUE)
+  checkException( checkIdentical( as.factor(letters), factor(letters[-1])), silent=TRUE)
   fac <- factor(letters)
   levels(fac) <- c("1", letters[-1])
-  checkException( checkIdentical( fac,  as.factor(letters)))
+  checkException( checkIdentical( fac,  as.factor(letters)), silent=TRUE)
   
   ##  nested list with NA, NaN, Inf
-  checkException( checkIdentical( ))
+  checkException( checkIdentical( ), silent=TRUE)
 
   
   ##  POSIX
   sysTime <- as.POSIXlt(Sys.time())
-  checkException( checkIdentical( sysTime, as.POSIXlt(Sys.time(), tz="GMT")))
+  checkException( checkIdentical( sysTime, as.POSIXlt(Sys.time(), tz="GMT")), silent=TRUE)
   
   ##  raw
-  checkException(checkIdentical( raw(14), raw(13)))
+  checkException(checkIdentical( raw(14), raw(13)), silent=TRUE)
   namedRaw <-  as.raw(1:14)
   names(namedRaw) <- letters[1:14]
-  checkException(checkIdentical( namedRaw, as.raw(1:14)))
+  checkException(checkIdentical( namedRaw, as.raw(1:14)), silent=TRUE)
                  
   ##  S3 objects (ie. lists with attributes)
   ##  from ?lm Example
   lm.D9base <- lm(weight ~ group - 1)
-  checkException( checkIdentical( lm.D9base, lm.D9))
+  checkException( checkIdentical( lm.D9base, lm.D9), silent=TRUE)
 
   ##  S4 objects
   if (identical(TRUE, require(methods))) {
@@ -429,7 +425,7 @@ testRUnit.checkIdentical <- function()
     s4Obj <- try(new("track2"))
     s4ObjDiff <- s4Obj
     s4ObjDiff@y <- s4ObjDiff@x
-    checkException( checkIdentical( s4Obj, s4ObjDiff))
+    checkException( checkIdentical( s4Obj, s4ObjDiff), silent=TRUE)
   }
 
 }
@@ -453,15 +449,15 @@ testRUnit.checkTrue <- function()
   ##  errorr handling
   namedArg <- FALSE
   names(namedArg) <- "No"
-  checkException( checkTrue( namedArg))
+  checkException( checkTrue( namedArg), silent=TRUE)
   
-  checkException( checkTrue( FALSE))
+  checkException( checkTrue( FALSE), silent=TRUE)
   
   ##  incorrect length
-  checkException( checkTrue( c(TRUE, TRUE)))
-  checkException( checkTrue( c(FALSE, TRUE)))
-  checkException( checkTrue( logical(0)))
-  checkException( checkTrue( logical(2)))
+  checkException( checkTrue( c(TRUE, TRUE)), silent=TRUE)
+  checkException( checkTrue( c(FALSE, TRUE)), silent=TRUE)
+  checkException( checkTrue( logical(0)), silent=TRUE)
+  checkException( checkTrue( logical(2)), silent=TRUE)
   
 }
 
@@ -472,23 +468,23 @@ testRUnit.checkException <- function()
   ## test case for function checkException of class: none
   ##@edescr
 
-  checkException( checkTrue( FALSE))
-  checkException( checkTrue( ))
-  checkException( checkEquals( ))
-  checkException( checkEquals( 24))
-  checkException( checkEquals( 24, 24, tolerance="dummy"))
-  checkException( checkEqualsNumeric( ))
-  checkException( checkEqualsNumeric( 24))
-  checkException( checkEqualsNumeric( 24, 24, tolerance="dummy"))
+  checkException(checkTrue(FALSE), silent=TRUE)
+  checkException( checkTrue( ), silent=TRUE)
+  checkException( checkEquals( ), silent=TRUE)
+  checkException( checkEquals( 24), silent=TRUE)
+  checkException( checkEquals( 24, 24, tolerance="dummy"), silent=TRUE)
+  checkException( checkEqualsNumeric( ), silent=TRUE)
+  checkException( checkEqualsNumeric( 24), silent=TRUE)
+  checkException( checkEqualsNumeric( 24, 24, tolerance="dummy"), silent=TRUE)
 
-  checkException( stop("with message"), silent=FALSE)
+  checkException( stop("Error message OK here"), silent=FALSE)
   checkException( stop("wo message"), silent=TRUE)
 
   ##  R 2.5.0 devel example that failed
   ##  minimal example provided by Seth Falcon
   ll = list()
   ll[[1]] = function(x) stop("died")
-  checkException( do.call(ll[[1]], list(1)))
+  checkException( do.call(ll[[1]], list(1)), silent=TRUE)
 
   ##  S4 objects
   if (identical(TRUE, require(methods))) {
@@ -499,19 +495,20 @@ testRUnit.checkException <- function()
     on.exit(removeClass("track2", where=.GlobalEnv))
 
     s4Obj <- try(new("track2"))
-    checkException( slot(s4Obj, "z"))
-    checkException( slot(s4Obj, "z") <- 1:10)
+    checkException( slot(s4Obj, "z"), silent=TRUE)
+    checkException( slot(s4Obj, "z") <- 1:10, silent=TRUE)
   
     ##  missing method argument
-    ##  coerce(from, to)
-    checkException( coerce(s4Obj))
+    ##  as(from, to)
+    checkException( as(s4Obj), silent=TRUE)
   }
 }
 
-testRUnit.checkWarning <- function(){
-  checkWarning(warning("with message"), silent=FALSE)
-  checkWarning(warning("no warning"), silent=TRUE)
-}
+
+# testRUnit.checkWarning <- function(){
+#   checkWarning(warning("with message"), silent=FALSE)
+#   checkWarning(warning("no warning"), silent=TRUE)
+# }
 
 
 testRUnit.DEACTIVATED <- function()
@@ -520,10 +517,10 @@ testRUnit.DEACTIVATED <- function()
   ## test case for function DEACTIVATED of class: none
   ##@edescr
 
-  checkException( DEACTIVATED())
-  checkException( DEACTIVATED("some message"))
+  checkException(DEACTIVATED(), silent=TRUE)
+  checkException( DEACTIVATED("some message"), silent=TRUE)
   ##  compound text
-  checkException( DEACTIVATED(c("some message", "some more", "and more")))
+  checkException( DEACTIVATED(c("some message", "some more", "and more")), silent=TRUE)
 }
 
 
@@ -547,7 +544,7 @@ testRUnit.defineTestSuite <- function()
   
   ##  error handling
   ##  missing 'dirs' argument
-  checkException(defineTestSuite("RUnit Example", testFileRegexp="correctTestCase.r"))
+  checkException(defineTestSuite("RUnit Example", testFileRegexp="correctTestCase.r"), silent=TRUE)
 }
 
 
@@ -567,85 +564,85 @@ testRUnit.isValidTestSuite <- function()
   ##  has to be S3 class 'RUnitTestSuite'
   testSuiteFail <- testSuite
   class(testSuiteFail) <- "NotUnitTestSuite"
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
   
   ##  expecting list elements
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- NULL
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
   
   ##  has to be character
   testSuiteFail <- testSuite
   testSuiteFail[["name"]] <- list()
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
  
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- list()
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
   
   testSuiteFail <- testSuite
   testSuiteFail[["testFileRegexp"]] <- list()
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
   
   testSuiteFail <- testSuite
   testSuiteFail[["testFuncRegexp"]] <- list()
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
   
 
   ##  length 1 required
   testSuiteFail <- testSuite
   testSuiteFail[["name"]] <- character(0)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["name"]] <- character(2)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["testFileRegexp"]] <- character(0)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["testFileRegexp"]] <- character(2)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["testFuncRegexp"]] <- character(0)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["testFuncRegexp"]] <- character(2)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["rngKind"]] <- character(0)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["rngKind"]] <- character(2)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["rngNormalKind"]] <- character(0)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["rngNormalKind"]] <- character(2)
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   ##  director has to exist
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- "doesNotExist"
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- c(tempdir(), "doesNotExist", tempdir())
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 
   ##  same, '' has to return FALSE
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- c(tempdir(), "", tempdir())
-  checkTrue( !isValidTestSuite(testSuiteFail))
+  checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 }
 
   
@@ -681,7 +678,7 @@ testRUnit.runTestFile <- function()
   ##  check if any argument check is reached/performed
   ##  useOwnErrorHandler
   ##  type logical
-  checkException( runTestFile(testFile, useOwnErrorHandler=integer(1)))
+  checkException( runTestFile(testFile, useOwnErrorHandler=integer(1)), silent=TRUE)
 }
 
 
@@ -706,11 +703,11 @@ testRUnit.runTestSuite <- function()
   ##  useOwnErrorHandler
   ##  type logical
   tS <- testSuiteTest
-  checkException( runTestSuite(tS, useOwnErrorHandler=integer(1)))
+  checkException( runTestSuite(tS, useOwnErrorHandler=integer(1)), silent=TRUE)
   ##  length 1
-  checkException( runTestSuite(tS, useOwnErrorHandler=logical(0)))
-  checkException( runTestSuite(tS, useOwnErrorHandler=logical(2)))
-  checkException( runTestSuite(tS, useOwnErrorHandler=as.logical(NA)))
+  checkException( runTestSuite(tS, useOwnErrorHandler=logical(0)), silent=TRUE)
+  checkException( runTestSuite(tS, useOwnErrorHandler=logical(2)), silent=TRUE)
+  checkException( runTestSuite(tS, useOwnErrorHandler=as.logical(NA)), silent=TRUE)
   
   ##  testSuite
   

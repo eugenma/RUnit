@@ -39,34 +39,34 @@ testRUnit.printTextProtocol <- function()
 
   ##  input argument error handling
   ##  missing 'testData' object
-  checkException(printTextProtocol())
+  checkException(printTextProtocol(), silent=TRUE)
 
   ##  wrong class
-  checkException(printTextProtocol("dummy"))
+  checkException(printTextProtocol("dummy"), silent=TRUE)
 
   
   ##  fileName arg errors
   testData <- list()
   class(testData) <- "RUnitTestData"
   ##  wrong type
-  checkException(printTextProtocol(testData, fileName=numeric(1)))
+  checkException(printTextProtocol(testData, fileName=numeric(1)), silent=TRUE)
   ##  wrong length
-  checkException(printTextProtocol(testData, fileName=character(0)))
-  checkException(printTextProtocol(testData, fileName=character(2)))
+  checkException(printTextProtocol(testData, fileName=character(0)), silent=TRUE)
+  checkException(printTextProtocol(testData, fileName=character(2)), silent=TRUE)
 
   
   ##  separateFailureList arg errors
   ##  wrong type
-  checkException(printTextProtocol(testData, separateFailureList=numeric(0)))
+  checkException(printTextProtocol(testData, separateFailureList=numeric(0)), silent=TRUE)
   ##  wrong length
-  checkException(printTextProtocol(testData, separateFailureList=logical(0)))
-  checkException(printTextProtocol(testData, separateFailureList=logical(2)))
+  checkException(printTextProtocol(testData, separateFailureList=logical(0)), silent=TRUE)
+  checkException(printTextProtocol(testData, separateFailureList=logical(2)), silent=TRUE)
 
   ##  showDetails arg errors
   ##  wrong type
-  checkException(printTextProtocol(testData, showDetails=numeric(0)))
+  checkException(printTextProtocol(testData, showDetails=numeric(0)), silent=TRUE)
   ##  wrong length
-  checkException(printTextProtocol(testData, showDetails=logical(0)))
-  checkException(printTextProtocol(testData, showDetails=logical(2)))
+  checkException(printTextProtocol(testData, showDetails=logical(0)), silent=TRUE)
+  checkException(printTextProtocol(testData, showDetails=logical(2)), silent=TRUE)
 }
 

@@ -20,7 +20,7 @@
 cat("\n\nRUnit test cases for '.setUp' function\n\n")
 
 ##  defined for the life time of this environment
-warningsLengthDefault <- getOption("warnings.length")
+warningLengthDefault <- getOption("warning.length")
 
 
 .setUp <- function() {
@@ -44,8 +44,8 @@ warningsLengthDefault <- getOption("warnings.length")
 
   ##  modify options
   ##  current default: 1000
-  options(warnings.length=123)
-  if ( !identical(TRUE, all.equal.numeric(getOption("warnings.length"), 123))) {
+  options(warning.length=123)
+  if ( !identical(TRUE, all.equal.numeric(getOption("warning.length"), 123))) {
      stop(paste(".setUp failed to set options."))
   }
 
@@ -83,9 +83,9 @@ testRUnit..setUp.Test1 <- function() {
   unlink(tempFile)
   
 
-  checkEqualsNumeric( getOption("warnings.length"), 123)
+  checkEqualsNumeric( getOption("warning.length"), 123)
   ##  reset options
-  options(warnings.length=warningsLengthDefault)
+  options(warning.length=warningLengthDefault)
 
   checkTrue( isClass("runitDummyS4Class", where=.GlobalEnv))
   ##  remove class
@@ -112,9 +112,9 @@ testRUnit..setUp.Test2 <- function() {
   unlink(tempFile)
   
 
-  checkEqualsNumeric( getOption("warnings.length"), 123)
+  checkEqualsNumeric( getOption("warning.length"), 123)
   ##  reset options
-  options(warnings.length=warningsLengthDefault)
+  options(warning.length=warningLengthDefault)
 
   checkTrue( isClass("runitDummyS4Class", where=.GlobalEnv))
   ##  remove class

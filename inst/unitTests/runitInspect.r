@@ -173,12 +173,12 @@ testRUnit.printHTML <- function() {
   checkTrue( is.null(printHTML.trackInfo(resTrack, baseDir=outDir)))
   
   ##  error handling
-  checkException(printHTML("notCorrectClass"))
+  checkException(printHTML.trackInfo("notCorrectClass"), silent=TRUE)
   ##  baseDir
-  checkException(printHTML(resTrack,  baseDir=logical(1)))
-  checkException(printHTML(resTrack,  baseDir=character(0)))
-  checkException(printHTML(resTrack,  baseDir=character(2)))
-  checkException(printHTML(resTrack,  baseDir=as.character(NA)))
+  checkException(printHTML.trackInfo(resTrack,  baseDir=logical(1)), silent=TRUE)
+  checkException(printHTML.trackInfo(resTrack,  baseDir=character(0)), silent=TRUE)
+  checkException(printHTML.trackInfo(resTrack,  baseDir=character(2)), silent=TRUE)
+  checkException(printHTML.trackInfo(resTrack,  baseDir=as.character(NA)), silent=TRUE)
   
 }
 

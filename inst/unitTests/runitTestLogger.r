@@ -89,5 +89,5 @@ testRUnit.getErrors <- function() {
   checkEquals(res$nFail, 15)
 
   ##  check exception handling
-  checkException( getErrors( list()))
+  checkException( getErrors( list()), silent=TRUE)
 }

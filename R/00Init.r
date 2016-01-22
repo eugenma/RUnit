@@ -28,6 +28,7 @@ RUnitEnv <- new.env()
 
 ##  runitVersion <- packageDescription("RUnit", lib.loc=libname, fields="Version")
   assign(".testLogger", NULL, envir=RUnitEnv)
+
   ##  add options to R's global options list
   .buildRUnitOptions()
 }

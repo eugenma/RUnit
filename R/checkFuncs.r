@@ -228,7 +228,7 @@ checkException <- function(expr, msg="", silent=getOption("RUnit")$silent)
 
   testFailed <- function(tryResult)!inherits(tryResult, "try-error")
   errorMsg <- function(result)paste("Error not generated as expected\n", msg)
-
+  
   return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
 }
 

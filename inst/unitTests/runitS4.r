@@ -29,7 +29,7 @@ testRUnit.S4classInheritance <- function()
   ##@edescr
 
 
-  className <- setClass("testVirtualClass",
+  myCls <- setClass("testVirtualClass",
                         representation("VIRTUAL",
                                        x = "numeric",
                                        y = "numeric",
@@ -37,32 +37,30 @@ testRUnit.S4classInheritance <- function()
                                        ylab = "character")
                         )
   
-  
-  checkEquals(className, "testVirtualClass")
-
-  checkException( new(className))
+  print(class(myCls))
+  checkEquals(myCls, "testVirtualClass")
+  checkException( new(myCls), silent=TRUE)
   
   derivedClassName <- setClass("testDerivedClass",
-                               representation(className,
+                               representation("testVirtualClass",
                                               scale = "numeric",
                                               title = "character")
                                )
   ##  Attention:
   ##  invert inheritance order!
   on.exit(removeClass(derivedClassName))
-  on.exit(removeClass(className), add=TRUE)
+  on.exit(removeClass(myCls), add=TRUE)
   
   checkEquals(derivedClassName, "testDerivedClass")
   objD <- new(derivedClassName)
   checkTrue( is(objD, derivedClassName))
   checkTrue( isS4(objD))
 
-  
   checkTrue(require(stats4))
 
   ##  instantiate S4 class from stats
   ##  be sure to use a unique unused variable name here
-  ##  i.e. NOT className as this has been used before
+  ##  i.e. NOT myCls as this has been used before
   ##  and the on.exit call will look up the name just *before*
   ##  the test function exists
   classNameMLE <- "mle"

@@ -41,27 +41,27 @@ testRUnit.printHTMLProtocol <- function()
   
   ##  input argument error handling
   ##  missing 'testData' object
-  checkException(printHTMLProtocol())
+  checkException(printHTMLProtocol(), silent=TRUE)
 
   ##  wrong class
-  checkException(printHTMLProtocol("dummy"))
+  checkException(printHTMLProtocol("dummy"), silent=TRUE)
 
   
   ##  fileName arg errors
   testData <- list()
   class(testData) <- "RUnitTestData"
   ##  wrong type
-  checkException(printHTMLProtocol(testData, fileName=numeric(1)))
+  checkException(printHTMLProtocol(testData, fileName=numeric(1)), silent=TRUE)
   ##  wrong length
-  checkException(printHTMLProtocol(testData, fileName=character(0)))
-  checkException(printHTMLProtocol(testData, fileName=character(2)))
+  checkException(printHTMLProtocol(testData, fileName=character(0)), silent=TRUE)
+  checkException(printHTMLProtocol(testData, fileName=character(2)), silent=TRUE)
 
   
   ##  separateFailureList arg errors
   ##  wrong type
-  checkException(printHTMLProtocol(testData, separateFailureList=numeric(0)))
+  checkException(printHTMLProtocol(testData, separateFailureList=numeric(0)), silent=TRUE)
   ##  wrong length
-  checkException(printHTMLProtocol(testData, separateFailureList=logical(0)))
-  checkException(printHTMLProtocol(testData, separateFailureList=logical(2)))
+  checkException(printHTMLProtocol(testData, separateFailureList=logical(0)), silent=TRUE)
+  checkException(printHTMLProtocol(testData, separateFailureList=logical(2)), silent=TRUE)
 }
 

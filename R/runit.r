@@ -69,7 +69,7 @@ isValidTestSuite <- function(testSuite, silent=FALSE)
   ##
   ##@codestatus : testing
   
-  if(silent){
+  if(silent) {
     raiseWarning <- function(...){}
   } else {
     raiseWarning <- warning
