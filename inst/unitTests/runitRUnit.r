@@ -506,7 +506,11 @@ testRUnit.checkException <- function()
     ##  coerce(from, to)
     checkException( coerce(s4Obj))
   }
-  
+}
+
+testRUnit.checkWarning <- function(){
+  checkWarning(warning("with message"), silent=FALSE)
+  checkWarning(warning("no warning"), silent=TRUE)
 }
 
 
@@ -642,8 +646,8 @@ testRUnit.isValidTestSuite <- function()
   testSuiteFail <- testSuite
   testSuiteFail[["dirs"]] <- c(tempdir(), "", tempdir())
   checkTrue( !isValidTestSuite(testSuiteFail))
- 
 }
+
   
 
 testRUnit.runTestFile <- function()

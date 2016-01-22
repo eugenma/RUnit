@@ -21,7 +21,7 @@ cat("\n\nRUnit test cases for 'printJUnitProtocol' function\n\n")
 testRUnit.printJUnitProtocol <- function()
 {
   ##  copy baseenv() logger
-  tmp <- get(".testLogger", envir = RUnitEnv)
+  tmp <- get(".testLogger", envir = RUnit:::RUnitEnv)
   testCaseDir <- file.path(system.file(package="RUnit"), "examples")
   testSuiteInternal <- defineTestSuite("RUnit Self Test", testCaseDir, "correctTestCase.r")
   testData2 <- runTestSuite(testSuiteInternal, useOwnErrorHandler=FALSE)
@@ -30,7 +30,7 @@ testRUnit.printJUnitProtocol <- function()
   testProtocolFile <- file.path(tempdir(), paste(timeStamp, "test_printJUnitProtocol.xml", sep="_"))
   ret <- printJUnitProtocol(testData2, fileName=testProtocolFile)
 
-  assign(".testLogger", tmp, envir = RUnitEnv)
+  assign(".testLogger", tmp, envir =RUnit:::RUnitEnv)
   
   checkTrue( file.exists(testProtocolFile))
 

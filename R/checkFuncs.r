@@ -62,6 +62,7 @@ checkEquals <- function(target, current, msg="",
   ##@ret           : [logical] TRUE iff check was correct
   ##
   ##@codestatus : testing
+  
   if (missing(current)) {
      stop("argument 'current' is missing")
   }
@@ -91,7 +92,7 @@ checkEquals <- function(target, current, msg="",
 
   errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
 }
 
 
@@ -130,7 +131,7 @@ checkEqualsNumeric <- function(target, current, msg="", tolerance = .Machine$dou
   testFailed <- function(result)!identical(result, TRUE)
   errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
 }
 
 
@@ -160,7 +161,7 @@ checkIdentical <- function(target, current, msg="")
   testFailed <- function(result)!identical(result, TRUE)
   errorMsg <- function(result)paste(paste(result, collapse="\n"), "\n", msg)
 
-  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
 }
 
 
@@ -190,7 +191,7 @@ checkTrue <- function(expr, msg="")
   testFailed <- function(result)!identical(result, TRUE)
   errorMsg <- function(result)paste("Test not TRUE", "\n", msg)
 
-  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
 }
 
 
@@ -228,7 +229,67 @@ checkException <- function(expr, msg="", silent=getOption("RUnit")$silent)
   testFailed <- function(tryResult)!inherits(tryResult, "try-error")
   errorMsg <- function(result)paste("Error not generated as expected\n", msg)
 
-  return(checkFuncRunner(checkExpr(), testFailed, errorMsg))
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
+}
+
+
+checkWarning <- function(expr, msg="", silent=getOption("RUnit")$silent)
+{
+  ##@bdescr
+  ## checks if a function call creates a warning. The passed function must be parameterless.
+  ## If you want to check a function with arguments, call it like this:
+  ## 'checkWarning(function() func(args...))'
+  ##
+  ##  adding argument silent was suggested by Seth Falcon <sfalcon@fhcrc.org>
+  ##  who provided a patch.
+  ##@edescr
+  ##@in  expr   : [parameterless function] the function to be checked
+  ##@in  msg    : [character] an optional message to further identify and document the call
+  ##@in  silent : [logical] passed on to try, iff TRUE error messages will be suppressed 
+  ##
+  ##@ret        : [logical] TRUE, if evaluation of the expression causes a warning, else a stop signal is issued 
+  ##
+  ##@codestatus : testing
+  if (missing(expr)) {
+    stop("'expr' is missing")
+  }
+  if(is.null(silent)) {
+    silent <- FALSE
+    warning("'silent' has to be of type 'logical'. Was NULL. Set to FALSE.")
+  }
+  
+  checkExpr <- function(){
+    warningFun <- function(w){
+      if(!silent)
+        warning(w)
+      return(w)
+    }
+    
+    tryResult <- tryCatch(eval(expr, envir=parent.frame()), warning=warningFun)
+    return(tryResult)
+  }
+  
+  testFailed <- function(tryResult)!inherits(tryResult, "warning")
+  errorMsg <- function(result)paste("Warning not generated as expected\n", msg)
+  
+  return(checkFuncRunner(checkExpr(), testFailed, errorMsg, envir=parent.frame()))
+}
+
+
+fail <- function(msg="") {
+  ##@bdescr
+  ## Always failing check.
+  ##
+  ##@edescr
+  ##@in  msg    : [character] an optional message to further identify and document the call
+  ##
+  ##@ret        : always a stop signal is issued 
+  ##
+  ##@codestatus : testing
+  
+  errorMsg <- function(x)paste("Test failed as expected\n", msg)
+  
+  return(checkFuncRunner(stop(), function(x)TRUE, errorMsg, envir=parent.frame()))
 }
 
 
