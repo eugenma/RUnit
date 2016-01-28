@@ -31,7 +31,7 @@ defineTestSuite(name, dirs, testFileRegexp = "^runit.+\\\\.[rR]$",
                 testFuncRegexp = "^test.+",
                 rngKind = "Marsaglia-Multicarry",
                 rngNormalKind = "Kinderman-Ramage")
-isValidTestSuite(testSuite)
+isValidTestSuite(testSuites)
 runTestSuite(testSuites, useOwnErrorHandler = TRUE, 
              verbose = getOption("RUnit")$verbose)
 runTestFile(absFileName, useOwnErrorHandler = TRUE,
@@ -80,7 +80,7 @@ runTestFile(absFileName, useOwnErrorHandler = TRUE,
   \code{defineTestSuite} is a helper function to define a test
   suite. See below for a precise definition of a test suite.
 
-  \code{isValidTestSuite} checks if an object defines a valid test suite.
+  \code{isValidTestSuite} checks if an object or a list of objects define valid test suites.
 }
 
 \details{
