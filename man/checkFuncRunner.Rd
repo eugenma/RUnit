@@ -32,11 +32,6 @@ checkFuncRunner(expr, testFailedChecker, errMsg, envir=parent.frame())
 
 \description{Runner for custom check functions.}
 
-\details{
-    %empty
-}
-
-
 \value{
 Usually return value can be ignored, since if the test ist failing an errror is raised by \code{\link{stop}}.
 

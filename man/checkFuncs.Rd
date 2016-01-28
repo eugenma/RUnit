@@ -23,19 +23,23 @@
 \alias{checkIdentical}
 \alias{checkTrue}
 \alias{checkException}
+\alias{checkWarning}
+\alias{fail}
 \alias{DEACTIVATED}
 \title{RUnit check functions}
 
 \usage{
-checkEquals(target, current, msg,
+checkEquals(target, current, msg="",
             tolerance = .Machine$double.eps^0.5, 
             checkNames = TRUE, ...)
-checkEqualsNumeric(target, current, msg,
+checkEqualsNumeric(target, current, msg="",
                    tolerance = .Machine$double.eps^0.5, ...)
-checkIdentical(target, current, msg)
-checkTrue(expr, msg)
-checkException(expr, msg, silent = getOption("RUnit")$silent)
-DEACTIVATED(msg)
+checkIdentical(target, current, msg="")
+checkTrue(expr, msg="")
+checkException(expr, msg="", silent = getOption("RUnit")$silent)
+checkWarning(expr, msg="", silent = getOption("RUnit")$silent)
+fail(msg="")
+DEACTIVATED(msg="")
 }
 
 \arguments{
@@ -86,6 +90,11 @@ DEACTIVATED(msg)
   If it does the test is OK. Otherwise an error is
   generated and the failure is reported to the test logger such that it
   appears in the test protocol. 
+
+  \code{checkWarning} same as \code{checkException} but checks if the 
+  expression generates a warning.
+
+  \code{fail} if placed in a test, it will always generate a failing test.
   
   \code{DEACTIVATED} interrupts the test function and reports the test case
   as deactivated. In the test protocol deactivated test functions are

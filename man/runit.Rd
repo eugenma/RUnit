@@ -31,7 +31,7 @@ defineTestSuite(name, dirs, testFileRegexp = "^runit.+\\\\.[rR]$",
                 testFuncRegexp = "^test.+",
                 rngKind = "Marsaglia-Multicarry",
                 rngNormalKind = "Kinderman-Ramage")
-isValidTestSuite(testSuites)
+isValidTestSuite(testSuites, silent=FALSE)
 runTestSuite(testSuites, useOwnErrorHandler = TRUE, 
              verbose = getOption("RUnit")$verbose)
 runTestFile(absFileName, useOwnErrorHandler = TRUE,
@@ -50,9 +50,9 @@ runTestFile(absFileName, useOwnErrorHandler = TRUE,
     for possible options).}
   \item{rngNormalKind}{name of a valid rnorm RNG version (see 
     \code{\link[base:Random]{RNGkind}} for possible options).}
-  \item{testSuite}{A single object of class test suite.}
   \item{testSuites}{A single object of class test suite or a list of
     test suite objects.}
+  \item{silent}{If \code{TRUE} then warnings for invalid test suites are raised.}
   \item{useOwnErrorHandler}{If \code{TRUE} the RUnit framework installs
     its own error handler during test case execution (but reinstalls the
     original handler before it returns). If \code{FALSE} the error
