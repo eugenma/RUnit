@@ -651,6 +651,27 @@ testRUnit.isValidTestSuite <- function()
   checkTrue( !isValidTestSuite(testSuiteFail, silent=TRUE))
 }
 
+
+
+testRUnit.isValidTestSuite.Multiple <- function()
+{
+  ##@bdescr
+  ## test case for checking a list of valid test suites.
+  ##@edescr
+  
+  testSuites <- list(defineTestSuite("RUnit Example 1",
+                               system.file("examples", package="RUnit"),
+                               testFileRegexp="correctTestCase.r"),
+                    defineTestSuite("RUnit Example 2",
+                                    system.file("examples", package="RUnit"),
+                                    testFileRegexp="correctTestCase.r"),
+                    defineTestSuite("RUnit Example 3",
+                                    system.file("examples", package="RUnit"),
+                                    testFileRegexp="correctTestCase.r"))
+  
+  checkTrue(isValidTestSuite(testSuites, FALSE))
+}
+
   
 
 testRUnit.runTestFile <- function()

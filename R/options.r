@@ -33,7 +33,7 @@
     class(RUnit) <- "RUnitOptions"
   }
 
-  if (is.null( RUnit$verbose)) {
+  if (is.null(RUnit$verbose)) {
     ##  integer: == 0: silent, >= 1: add comments to test case log 
      RUnit$verbose <- 1L
   }

@@ -19,6 +19,7 @@
 
 RUnitEnv <- new.env()
 
+
 .onLoad <- function(libname, pkgname)
 {
   ##@bdescr
@@ -32,6 +33,7 @@ RUnitEnv <- new.env()
   ##  add options to R's global options list
   .buildRUnitOptions()
 }
+
 
 .onUnload <- function(libpath) {
   ##  drop RUnit specific options from global options list

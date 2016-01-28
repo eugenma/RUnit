@@ -95,6 +95,7 @@
       if(is.element(testSuite$name, names(.testData))) {
         stop(paste("Duplicate test suite:", testSuite$name))
       }
+      
       .currentTestSuiteName <<- testSuite$name
       .testData[[testSuite$name]] <<- list(nTestFunc = 0L,
                                            nDeactivated = 0L,

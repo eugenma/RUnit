@@ -56,25 +56,20 @@ defineTestSuite <- function(name, dirs,
 }
 
 
-isValidTestSuite <- function(testSuite, silent=FALSE)
+
+.isValidTestSuiteSingle <- function(testSuite, raiseWarning)
 {
   ##@bdescr
-  ##  Helper function
+  ##  Internal helper function for isValidTestSuite() for checking one individual testSuite instance.
   ##  checks 'RUnitTestSuite' class object features
   ##@edescr
   ##
-  ##@in   testSuite : [RUnitTestSuite] S3 class (list) object, input object for test runner
-  ##@in   silent     : [logical] TRUE if no warnings should be shown
-  ##@ret            : [logical] TRUE if testSuite is valid
+  ##@in   testSuite   : [RUnitTestSuite] S3 class (list) object, input object for test runner
+  ##@in   raiseWarning : [function] function used to raise warnings
+  ##@ret            : [logical] TRUE if testSuite are valid
   ##
   ##@codestatus : testing
   
-  if(silent) {
-    raiseWarning <- function(...){}
-  } else {
-    raiseWarning <- warning
-  }
-
   if(!is(testSuite, "RUnitTestSuite"))
   {
     raiseWarning(paste("'testSuite' object is not of class 'RUnitTestSuite'."))
@@ -141,6 +136,32 @@ isValidTestSuite <- function(testSuite, silent=FALSE)
   }
   
   return(TRUE)
+}
+
+
+isValidTestSuite <- function(testSuites, silent=FALSE) { 
+  ##@bdescr
+  ##  Internal helper function for checking validity of one or some testSuite instances.
+  ##  checks 'RUnitTestSuite' class object features
+  ##@edescr
+  ##
+  ##@in   testSuites   : [RUnitTestSuite] S3 class (list) object, input object for test runner or a list of S3 classes.
+  ##@in   silent : [boolean] if no warnings should be raised in case a testSuite is invalid.
+  ##@ret            : [logical] TRUE if all testSuites in the list are valid
+  ##
+  ##@codestatus : testing
+  if(silent) {
+    raiseWarning <- function(...){}
+  } else {
+    raiseWarning <- warning
+  }
+  
+  if(!is.vector(testSuites)){
+    testSuites <- list(testSuites)
+  }
+  
+  result <- sapply(testSuites, function(elem).isValidTestSuiteSingle(elem, raiseWarning), simplify=TRUE)
+  return(all(result))
 }
 
 

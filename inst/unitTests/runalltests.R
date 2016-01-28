@@ -1,10 +1,11 @@
 
 if (FALSE) {
+  rm(list=ls(all.names=TRUE))
   try(detach(package:RUnit, unload=TRUE), silent=TRUE)
   try(remove.packages("RUnit"), silent=TRUE)
   install.packages("D:/projects/OpenSource/RUnit_0.5.0.tar.gz", repos=NULL)
-  
 }
+
 
 # Returns the file path to the starting script.
 # Source \url{http://stackoverflow.com/a/15373917/3142459}
@@ -35,7 +36,10 @@ options(warn=1)
 
 testSuite <- defineTestSuite(name="RUnit",
                             dirs=".",
-                           testFileRegexp="runit.*\\.r$",
+                             testFileRegexp="runit.*\\.r$",
+                            #testFuncRegexp="testRUnit.isValidTestSuite.Multiple",
+                            #testFileRegexp="runitS4.r$",
+                            #testFileRegexp="runitRUnit.r$",
                             rngKind="default",
                             rngNormalKind="default")
 
