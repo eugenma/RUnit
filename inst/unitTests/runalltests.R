@@ -36,7 +36,7 @@ options(warn=1)
 
 testSuite <- defineTestSuite(name="RUnit",
                             dirs=".",
-                            testFileRegexp="runit.*\\.r$",
+                            testFileRegexp="runit.*\\.[rR]$",
                             rngKind="default",
                             rngNormalKind="default")
 
