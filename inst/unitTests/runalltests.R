@@ -36,10 +36,7 @@ options(warn=1)
 
 testSuite <- defineTestSuite(name="RUnit",
                             dirs=".",
-                             testFileRegexp="runit.*\\.r$",
-                            #testFuncRegexp="testRUnit.isValidTestSuite.Multiple",
-                            #testFileRegexp="runitS4.r$",
-                            #testFileRegexp="runitRUnit.r$",
+                            testFileRegexp="runit.*\\.r$",
                             rngKind="default",
                             rngNormalKind="default")
 
