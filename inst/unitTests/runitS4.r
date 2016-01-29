@@ -30,21 +30,21 @@ testRUnit.S4classInheritance <- function()
 
 
   myCls <- setClass("testVirtualClass",
-                        representation("VIRTUAL",
-                                       x = "numeric",
-                                       y = "numeric",
-                                       xlab = "character",
-                                       ylab = "character")
-                        )
+                    contains="VIRTUAL",
+                    slots=c(x = "numeric",
+                            y = "numeric",
+                            xlab = "character",
+                            ylab = "character")
+                    )
   
   print(class(myCls))
   checkEquals(myCls, "testVirtualClass")
   checkException( new(myCls), silent=TRUE)
   
   derivedClassName <- setClass("testDerivedClass",
-                               representation("testVirtualClass",
-                                              scale = "numeric",
-                                              title = "character")
+                               contains="testVirtualClass",
+                               slots=c(scale = "numeric",
+                                       title = "character")
                                )
   ##  Attention:
   ##  invert inheritance order!
@@ -69,9 +69,9 @@ testRUnit.S4classInheritance <- function()
   checkTrue( isS4(obj))
   
   derivedStats4ClassName <- setClass("mleChild",
-                                     representation(classNameMLE,
-                                                    scale = "numeric",
-                                                    title = "character")
+                                     contains=classNameMLE,
+                                     slots=c(scale = "numeric",
+                                             title = "character")
                                      )
   on.exit(removeClass(derivedStats4ClassName), add=TRUE)
   
