@@ -38,7 +38,7 @@ checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame(
     if(.existsTestLogger()) {
       RUnitEnv$.testLogger$setFailure()
     }
-    RUnitEnv$.testLogger$setErrorContext(getCheckFunc())
+    RUnitEnv$.testLogger$setErrorContext(getCallingCheckFun())
     stop(errMsg(result))
   } else {
     return(TRUE)
@@ -46,28 +46,34 @@ checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame(
 }
 
 
-getCheckFunc <- function() {
+getCheckFunctionRegexList <- function() {
+  opts <- getOption("RUnit")
+  funNames <- opts$checkFunctions
+  
+  regexFunNames <- paste("\\b", funNames, "\\b", sep="")
+  
+  return(regexFunNames)
+}
+
+
+getCallingCheckFun <- function() {
   calls <- sys.calls()
   calls <- Map(function(x)deparse(x, control="useSource"), calls)
   
   grepCall <- function(pattern)grep(pattern, calls, perl=TRUE, ignore.case=TRUE)
   
-  callPos <- Map(grepCall, regexFunNames)
+  callPos <- Map(grepCall, getCheckFunctionRegexList())
   callPos <- unlist(callPos, recursive=TRUE, use.names=FALSE)
+  
+  if(is.null(callPos) || (length(callPos) == 0)){
+    stop("The checkFunction is not in RUnit$checkFunctions option list.")
+  }
   
   frame <- sys.frames()[[callPos-1]]
   callEntry <- calls[[callPos]]
   
   return(list(call=callEntry, frame=frame))
 }
-
-CHECK_FUNCS_NAMES <- c("checkEquals", "checkEqualsNumeric", "checkIdentical",
-                       "checkTrue",
-                       "checkException",
-                       "checkWarning",
-                       "fail")
-
-regexFunNames <- paste("\\b", CHECK_FUNCS_NAMES, "\\b", sep="")
 
 
 checkEquals <- function(target, current, msg="",

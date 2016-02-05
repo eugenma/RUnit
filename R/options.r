@@ -45,5 +45,16 @@
   if (is.null(RUnit$outfile)) {
     RUnit$outfile <- NULL
   }
+  
+  if (is.null(RUnit$checkFunctions)) {
+    RUnit$checkFunctions <- c("checkEquals", 
+                              "checkEqualsNumeric", 
+                              "checkIdentical",
+                              "checkTrue",
+                              "checkException",
+                              "checkWarning",
+                              "fail")
+  }
+  
   options("RUnit"=RUnit)
 }

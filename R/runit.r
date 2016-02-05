@@ -194,14 +194,12 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   return(invisible())
 }
 
-.getErrorMessage <- function(errorContext, failure, error=!failure) {
-  if(missing(failure))
-    failure <- !error
+
+.getErrorMessage <- function(errorContext) {
+  contextLine <- paste("\t", paste(errorContext$call))
+  rErrorMsg <- paste("\t", geterrmessage(), collapse="\n")
   
-  reason <- if (failure)"Failure" else "Error"
-  
-  msg <- paste(reason, "in", paste(errorContext$call))
-  msg <- paste(geterrmessage(), msg, collapse="\n")
+  msg <- paste("\nCONTEXT:", contextLine, "R Error Message:", rErrorMsg, sep="\n")
   
   return(msg)
 }
@@ -254,11 +252,11 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
       errorContext <- RUnitEnv$.testLogger$getErrorContext()
       if(RUnitEnv$.testLogger$isFailure()) {
         RUnitEnv$.testLogger$addFailure(testFuncName=funcName,
-                                        failureMsg=.getErrorMessage(errorContext, failure=TRUE))
+                                        failureMsg=.getErrorMessage(errorContext))
       }
       else {
         RUnitEnv$.testLogger$addError(testFuncName=funcName,
-                                      errorMsg=.getErrorMessage(errorContext, error=TRUE))
+                                      errorMsg=.getErrorMessage(errorContext))
       }
     } # else of if(RUnitEnv$.testLogger$isDeactivated())
   }
