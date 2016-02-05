@@ -43,11 +43,23 @@ RUnit uses three options available via the global R options list
     using \code{sink}. Connection is close after test suite execution
     call (via \code{runTestSuite} or \code{runTestFile}) has completed.
     If the file exists it is overwriten.}
+    \item{\code{checkFunctions}:}{List of checkFuncs for failure context detection,
+        default: \code{c("checkEquals", "checkEqualsNumeric", 
+                              "checkIdentical",
+                              "checkTrue",
+                              "checkException",
+                              "checkWarning",
+                              "fail")}. 
+        The checkFunctions are used to detect the errorneous check condition in test cases.
+        In case one has to define custom check functions, add them to the list.
+        If the check function is missing either an error or an invalid check condition is
+        provided. (The last check function before the real check function.)
+    }
 }
 }
-\author{Matthias Burger}
+\author{Matthias Burger, Eugen Massini}
 
-\seealso{\code{\link{options}}, \code{\link{getOption}}, \code{\link{sink}}.}
+\seealso{\code{\link{options}}, \code{\link{getOption}}, \code{\link{sink}}, \link{checkFuncs}.}
 
 \examples{
 \dontrun{

@@ -18,6 +18,7 @@
 
 \encoding{latin1}
 \name{checkFuncs}
+\alias{checkFuncs}
 \alias{checkEquals}
 \alias{checkEqualsNumeric}
 \alias{checkIdentical}
@@ -134,8 +135,8 @@ DEACTIVATED(msg="")
 
 
 \author{
-Thomas \enc{König}{Koenig}, Klaus \enc{Jünemann}{Juenemann} 
-\ifelse{html}{\out{&amp;}}{&} Matthias Burger}
+Thomas \enc{König}{Koenig}, Klaus \enc{Jünemann}{Juenemann}, Matthias Burger 
+\ifelse{html}{\out{&amp;}}{&} Eugen Massini}
 
 \seealso{
   \code{\link{all.equal}}, \code{\link{all.equal.numeric}} and
