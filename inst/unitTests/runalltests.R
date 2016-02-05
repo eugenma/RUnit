@@ -1,3 +1,4 @@
+options(keep.source=TRUE)
 
 if (FALSE) {
   rm(list=ls(all.names=TRUE))
@@ -8,7 +9,6 @@ if (FALSE) {
 
 
 # Returns the file path to the starting script.
-# Source \url{http://stackoverflow.com/a/15373917/3142459}
 .getPathToMainScript <- function(normalize=TRUE) {
   cmdArgs <- commandArgs(trailingOnly = FALSE)
   needle <- "--file="
@@ -18,8 +18,13 @@ if (FALSE) {
     # Rscript
     pathToCaller <- sub(needle, "", cmdArgs[match])
   } else {
-    # 'source'd via R console
-    pathToCaller <- sys.frames()[[1]]$ofile
+    # 'source'd via R interactive mode
+    # We need to distinguish here if source was run with debugMode or not.
+    env <- sys.frames()[[1]]
+    paths <- mget(c("ofile", "fileName"), envir=env, ifnotfound=list(NULL, NULL))
+    validPaths <- sapply(paths, function(v)!is.null(v))
+    firstValidPath <- min(which(validPaths))
+    pathToCaller <- paths[[firstValidPath]]
   }
   
   if(normalize)
@@ -36,10 +41,11 @@ options(warn=1)
 
 testSuite <- defineTestSuite(name="RUnit",
                             dirs=".",
-                            testFileRegexp="runit.*\\.[rR]$",
+                            # testFileRegexp="runit.*\\.[rR]$",
+                            testFileRegexp="runitS4.R$",
                             rngKind="default",
                             rngNormalKind="default")
 
-testData <- runTestSuite(testSuite, verbose=1L)
+testData <- runTestSuite(testSuite, useOwnErrorHandler=TRUE, verbose=1L)
 printTextProtocol(testData, showDetails=FALSE)
 

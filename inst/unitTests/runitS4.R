@@ -38,7 +38,10 @@ testRUnit.S4classInheritance <- function()
                     )
   
   print(class(myCls))
-  checkEquals(myCls, "testVirtualClass")
+  checkEquals(T, !F)
+  
+  checkEquals(myCls, # asdf
+              "testVirtualClass")
   checkException( new(myCls), silent=TRUE)
   
   derivedClassName <- setClass("testDerivedClass",

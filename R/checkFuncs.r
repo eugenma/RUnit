@@ -31,19 +31,43 @@ checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame(
   if(.existsTestLogger()) {
     RUnitEnv$.testLogger$incrementCheckNum()
   }
-
+  
   result <- eval(expr, envir=envir)
-
+  
   if (testFailedChecker(result)) {
     if(.existsTestLogger()) {
       RUnitEnv$.testLogger$setFailure()
     }
+    RUnitEnv$.testLogger$setErrorContext(getCheckFunc())
     stop(errMsg(result))
   } else {
     return(TRUE)
   }
 }
 
+
+getCheckFunc <- function() {
+  calls <- sys.calls()
+  calls <- Map(function(x)deparse(x, control="useSource"), calls)
+  
+  grepCall <- function(pattern)grep(pattern, calls, perl=TRUE, ignore.case=TRUE)
+  
+  callPos <- Map(grepCall, regexFunNames)
+  callPos <- unlist(callPos, recursive=TRUE, use.names=FALSE)
+  
+  frame <- sys.frames()[[callPos-1]]
+  callEntry <- calls[[callPos]]
+  
+  return(list(call=callEntry, frame=frame))
+}
+
+CHECK_FUNCS_NAMES <- c("checkEquals", "checkEqualsNumeric", "checkIdentical",
+                       "checkTrue",
+                       "checkException",
+                       "checkWarning",
+                       "fail")
+
+regexFunNames <- paste("\\b", CHECK_FUNCS_NAMES, "\\b", sep="")
 
 
 checkEquals <- function(target, current, msg="",

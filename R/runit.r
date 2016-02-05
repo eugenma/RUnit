@@ -194,6 +194,18 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   return(invisible())
 }
 
+.getErrorMessage <- function(errorContext, failure, error=!failure) {
+  if(missing(failure))
+    failure <- !error
+  
+  reason <- if (failure)"Failure" else "Error"
+  
+  msg <- paste(reason, "in", paste(errorContext$call))
+  msg <- paste(geterrmessage(), msg, collapse="\n")
+  
+  return(msg)
+}
+
 
 .executeTestCase <- function(funcName, envir, setUpFunc, tearDownFunc)
 {
@@ -236,17 +248,19 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   ## ordinary test function execution:
   timing <- try(system.time(func()))
   if (inherits(timing, "try-error")) {
-    if(RUnitEnv$.testLogger$isFailure()) {
-      RUnitEnv$.testLogger$addFailure(testFuncName=funcName,
-                             failureMsg=geterrmessage())
-    }
-    else if(RUnitEnv$.testLogger$isDeactivated()) {
+    if(RUnitEnv$.testLogger$isDeactivated()) {
       RUnitEnv$.testLogger$addDeactivated(testFuncName=funcName)
-    }
-    else {
-      RUnitEnv$.testLogger$addError(testFuncName=funcName,
-                           errorMsg=geterrmessage())
-    }
+    } else { # so we have either a failure or an error.
+      errorContext <- RUnitEnv$.testLogger$getErrorContext()
+      if(RUnitEnv$.testLogger$isFailure()) {
+        RUnitEnv$.testLogger$addFailure(testFuncName=funcName,
+                                        failureMsg=.getErrorMessage(errorContext, failure=TRUE))
+      }
+      else {
+        RUnitEnv$.testLogger$addError(testFuncName=funcName,
+                                      errorMsg=.getErrorMessage(errorContext, error=TRUE))
+      }
+    } # else of if(RUnitEnv$.testLogger$isDeactivated())
   }
   else {
     RUnitEnv$.testLogger$addSuccess(testFuncName=funcName, secs=round(timing[3], 2))
@@ -297,7 +311,7 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   ##  will be destroyed after function closure is left
 
   ##  catch syntax errors in test case file
-  res <- try(sys.source(absTestFileName, envir=sandbox))
+  res <- try(sys.source(absTestFileName, envir=sandbox, keep.source=TRUE))
   if (inherits(res, "try-error")) {
     message <- paste("Error while sourcing ",absTestFileName,":",geterrmessage())
     RUnitEnv$.testLogger$addError(testFuncName=absTestFileName, errorMsg=message)
@@ -395,7 +409,7 @@ runTestSuite <- function(testSuites, useOwnErrorHandler=TRUE, verbose=getOption(
     }
     RUnitEnv$.testLogger$setCurrentTestSuite(testSuite)
     testFiles <- list.files(testSuite$dirs,
-                            pattern = testSuite$testFileRegexp,
+                            pattern=testSuite$testFileRegexp,
                             full.names=TRUE)
     for(testFile in testFiles) {
       ## set a standard random number generator.
