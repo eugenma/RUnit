@@ -30,10 +30,12 @@ checkFuncRunner(expr, testFailedChecker, errMsg, envir=parent.frame())
   \item{envir}{an environment where \code{expr} is evaluated. It should not be changed by default.}
 }
 
-\description{Runner for custom check functions.}
+\description{Runner for custom check functions.
+    Each custom check function should be added to the RUnit options \code{checkFunctions} (see \link{RUnit-options}) .
+}
 
 \value{
-Usually return value can be ignored, since if the test ist failing an errror is raised by \code{\link{stop}}.
+Usually return value can be ignored, since an error is raised by \code{\link{stop}} if the test is failing.
 
 If the test is passing the return value \code{TRUE}.
 }
@@ -45,6 +47,7 @@ If the test is passing the return value \code{TRUE}.
 
 \seealso{
     \code{\link{checkEquals}} for the default check functions.
+    \link{RUnit-options} check the \code{checkFunctions} option.
 }
 
 

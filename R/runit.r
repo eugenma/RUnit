@@ -195,6 +195,23 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
 }
 
 
+.getErrorMessage <- function(errorContext) {
+  if(is.null(errorContext)) {
+    contextLine <- NULL
+  } else {
+    contextLine <- paste("\t", paste(errorContext$call))
+    contextLine <- paste("Failed check:", contextLine, sep="\n")
+  }
+  
+  rErrorMsg <- paste("\t", geterrmessage(), collapse="\n")
+  rErrorMsg <- paste("R Error Message:", rErrorMsg, sep="\n")
+  
+  msg <- paste("", contextLine, rErrorMsg, sep="\n")
+  
+  return(msg)
+}
+
+
 .executeTestCase <- function(funcName, envir, setUpFunc, tearDownFunc)
 {
   ##@bdescr
@@ -236,17 +253,19 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   ## ordinary test function execution:
   timing <- try(system.time(func()))
   if (inherits(timing, "try-error")) {
-    if(RUnitEnv$.testLogger$isFailure()) {
-      RUnitEnv$.testLogger$addFailure(testFuncName=funcName,
-                             failureMsg=geterrmessage())
-    }
-    else if(RUnitEnv$.testLogger$isDeactivated()) {
+    if(RUnitEnv$.testLogger$isDeactivated()) {
       RUnitEnv$.testLogger$addDeactivated(testFuncName=funcName)
-    }
-    else {
-      RUnitEnv$.testLogger$addError(testFuncName=funcName,
-                           errorMsg=geterrmessage())
-    }
+    } else { # so we have either a failure or an error.
+      errorContext <- RUnitEnv$.testLogger$getErrorContext()
+      if(RUnitEnv$.testLogger$isFailure()) {
+        RUnitEnv$.testLogger$addFailure(testFuncName=funcName,
+                                        failureMsg=.getErrorMessage(errorContext))
+      }
+      else {
+        RUnitEnv$.testLogger$addError(testFuncName=funcName,
+                                      errorMsg=.getErrorMessage(errorContext))
+      }
+    } # else of if(RUnitEnv$.testLogger$isDeactivated())
   }
   else {
     RUnitEnv$.testLogger$addSuccess(testFuncName=funcName, secs=round(timing[3], 2))
@@ -297,7 +316,7 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
   ##  will be destroyed after function closure is left
 
   ##  catch syntax errors in test case file
-  res <- try(sys.source(absTestFileName, envir=sandbox))
+  res <- try(sys.source(absTestFileName, envir=sandbox, keep.source=TRUE))
   if (inherits(res, "try-error")) {
     message <- paste("Error while sourcing ",absTestFileName,":",geterrmessage())
     RUnitEnv$.testLogger$addError(testFuncName=absTestFileName, errorMsg=message)
@@ -395,7 +414,7 @@ runTestSuite <- function(testSuites, useOwnErrorHandler=TRUE, verbose=getOption(
     }
     RUnitEnv$.testLogger$setCurrentTestSuite(testSuite)
     testFiles <- list.files(testSuite$dirs,
-                            pattern = testSuite$testFileRegexp,
+                            pattern=testSuite$testFileRegexp,
                             full.names=TRUE)
     for(testFile in testFiles) {
       ## set a standard random number generator.

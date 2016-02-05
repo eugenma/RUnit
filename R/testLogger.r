@@ -39,6 +39,7 @@
   ## can be reset by function cleanup
   .currentTraceBack <- NULL
   .failure <- FALSE
+  .errorContext <- NULL
   .deactivationMsg <- NULL   ## if non-NULL test function is deactivated
   .checkNum <- 0
   ##  verbosity level:  0: silent
@@ -59,12 +60,13 @@
     ##@ret  : [NULL] used for it's side effect
     ##
     ##@codestatus : internal
-    
     res <- try(dump.frames())
     if (inherits(res, "try-error")) {
       .currentTraceBack <<- "traceback not available (dump.frames failed)."
     } else {
-      .currentTraceBack <<- names(last.dump)[-length(last.dump)]
+      numDump <- length(last.dump)
+      skip <- c(numDump-1, numDump)
+      .currentTraceBack <<- names(last.dump)[-skip]
     }
   }
   
@@ -194,6 +196,7 @@
 
     .currentTraceBack <<- NULL
     .failure <<- FALSE
+    .errorContext <<- NULL
     .deactivationMsg <<- NULL
     .checkNum <<- 0
   }
@@ -204,12 +207,23 @@
     ##@edescr
     return(.failure)
   }
-
+  
   .setFailure <- function() {
     ##@bdescr
     ##  set failure status to TRUE
     ##@edescr
     .failure <<- TRUE
+  }
+  
+  .setErrorContext <- function(frame) {
+    ##@bdescr
+    ##  set the frame of the failure location.
+    ##@edescr
+    .errorContext <<- frame
+  }
+  
+  .getErrorContext <- function(){
+    return(.errorContext)
   }
 
   .isDeactivated <- function() {
@@ -275,6 +289,8 @@
             addCheckNum          = function(testFuncName) .addCheckNum(testFuncName),
             isFailure            = .isFailure,
             setFailure           = .setFailure,
+            setErrorContext      = .setErrorContext,
+            getErrorContext      = .getErrorContext,
             isDeactivated        = .isDeactivated,
             setDeactivated       = function(msg) .setDeactivated(msg),
             incrementCheckNum    = .incrementCheckNum,
