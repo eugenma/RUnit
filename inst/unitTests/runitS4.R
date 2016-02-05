@@ -38,7 +38,9 @@ testRUnit.S4classInheritance <- function()
                     )
   
   print(class(myCls))
-  checkEquals(T, !F)
+  # checkEquals(T, !F)
+  v <- log("x")
+  print(v)
   
   checkEquals(myCls, # asdf
               "testVirtualClass")
@@ -53,6 +55,7 @@ testRUnit.S4classInheritance <- function()
   ##  invert inheritance order!
   on.exit(removeClass(derivedClassName))
   on.exit(removeClass(myCls), add=TRUE)
+  
   
   checkEquals(derivedClassName, "testDerivedClass")
   objD <- new(derivedClassName)

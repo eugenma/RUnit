@@ -38,7 +38,8 @@ checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame(
     if(.existsTestLogger()) {
       RUnitEnv$.testLogger$setFailure()
     }
-    RUnitEnv$.testLogger$setErrorContext(getCallingCheckFun())
+    context <- .getCallingCheckFun()
+    RUnitEnv$.testLogger$setErrorContext(context)
     stop(errMsg(result))
   } else {
     return(TRUE)
@@ -46,7 +47,7 @@ checkFuncRunner <- function(expr, testFailedChecker, errMsg, envir=parent.frame(
 }
 
 
-getCheckFunctionRegexList <- function() {
+.getCheckFunctionRegexList <- function() {
   opts <- getOption("RUnit")
   funNames <- opts$checkFunctions
   
@@ -56,13 +57,13 @@ getCheckFunctionRegexList <- function() {
 }
 
 
-getCallingCheckFun <- function() {
+.getCallingCheckFun <- function() {
   calls <- sys.calls()
   calls <- Map(function(x)deparse(x, control="useSource"), calls)
   
   grepCall <- function(pattern)grep(pattern, calls, perl=TRUE, ignore.case=TRUE)
   
-  callPos <- Map(grepCall, getCheckFunctionRegexList())
+  callPos <- Map(grepCall, .getCheckFunctionRegexList())
   callPos <- unlist(callPos, recursive=TRUE, use.names=FALSE)
   
   if(is.null(callPos) || (length(callPos) == 0)){

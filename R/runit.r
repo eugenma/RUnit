@@ -196,10 +196,17 @@ isValidTestSuite <- function(testSuites, silent=FALSE) {
 
 
 .getErrorMessage <- function(errorContext) {
-  contextLine <- paste("\t", paste(errorContext$call))
-  rErrorMsg <- paste("\t", geterrmessage(), collapse="\n")
+  if(is.null(errorContext)) {
+    contextLine <- NULL
+  } else {
+    contextLine <- paste("\t", paste(errorContext$call))
+    contextLine <- paste("Failed check:", contextLine, sep="\n")
+  }
   
-  msg <- paste("\nCONTEXT:", contextLine, "R Error Message:", rErrorMsg, sep="\n")
+  rErrorMsg <- paste("\t", geterrmessage(), collapse="\n")
+  rErrorMsg <- paste("R Error Message:", rErrorMsg, sep="\n")
+  
+  msg <- paste("", contextLine, rErrorMsg, sep="\n")
   
   return(msg)
 }
